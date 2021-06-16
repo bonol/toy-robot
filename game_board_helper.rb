@@ -42,13 +42,13 @@ module ToyRobotGame
     def collide_with_robot?(move)
       case @current_robot.direction
       when 'north'
-        @existing_robots.any?{|robot| robot.y.to_i == @current_robot.y.to_i + move }
+        @existing_robots.reject{|robot| robot.name == @current_robot.name}.any?{|robot| robot.y.to_i == @current_robot.y.to_i + move }
       when 'south'
-        @existing_robots.any?{|robot| robot.y.to_i == @current_robot.y.to_i - move }
+        @existing_robots.reject{|robot| robot.name == @current_robot.name}.any?{|robot| robot.y.to_i == @current_robot.y.to_i - move }
       when 'east'
-        @existing_robots.any?{|robot| robot.x.to_i == @current_robot.x.to_i + move }
+        @existing_robots.reject{|robot| robot.name == @current_robot.name}.any?{|robot| robot.x.to_i == @current_robot.x.to_i + move }
       when 'west'
-        @existing_robots.any?{|robot| robot.x.to_i == @current_robot.x.to_i - move }
+        @existing_robots.reject{|robot| robot.name == @current_robot.name}.any?{|robot| robot.x.to_i == @current_robot.x.to_i - move }
       else
         true
       end

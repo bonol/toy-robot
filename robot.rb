@@ -4,8 +4,8 @@ class Robot
   def initialize(name)
     @name = name
     @state = 'standby'
-    @x = 0
-    @y = 0
+    @x = ''
+    @y = ''
     @direction = ''
   end
 
