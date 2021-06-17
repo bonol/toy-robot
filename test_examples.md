@@ -1,0 +1,55 @@
+Toy Robot Game Test data
+=========================
+Examples
+###Example 1
+START
+ALICE: PLACE 0,0,NORTH
+ALICE: MOVE
+ALICE: REPORT
+
+###Expected output
+ALICE: 0,1,NORTH
+
+###Example 2
+START
+BOB: PLACE 0,0,NORTH
+BOB: LEFT
+BOB: MOVE
+BOB: REPORT
+
+###Expected output
+BOB: 0,0,WEST
+
+###Example 3
+START
+ALICE: PLACE 1,2,EAST
+ALICE: MOVE
+ALICE: MOVE
+ALICE: LEFT
+BOB: PLACE 3,3,EAST
+BOB: MOVE
+ALICE: MOVE
+ALICE: REPORT
+BOB: RIGHT
+BOB: MOVE
+LIST ROBOTS
+
+###Expected output
+ALICE: 3,3,NORTH
+BOB: 4,2,SOUTH
+
+###Example 4
+START
+BOB: PLACE 1,3,SOUTH
+ALICE: PLACE 0,1,EAST
+ALICE: MOVE
+BOB: MOVE
+BOB: MOVE
+ALICE: MOVE
+BOB: MOVE
+BOB: LEFT
+LIST ROBOTS
+
+###Expected output
+ALICE: 2,1,EAST
+BOB: 1,1,EAST

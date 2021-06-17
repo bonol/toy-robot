@@ -11,75 +11,53 @@ module ToyRobotGame
         while buf = Readline.readline('> ', true)
           begin
             case buf
-            when 'start'
+            when /START/i
               board.start_game
               puts 'start new game'
-            when 'restart'
-              board.restart_game
-              puts 'restart new game'
-            when /add\s/
-              if board.is_game_on? && board.within_robot_limit?
-                board.add_robot(robot_name(buf))
-                puts "Add new robot #{robot_name(buf)}"
-              else
-                puts 'Please start a new game'
-              end
-            when /use\s/
-              if board.is_game_on?
-                unless board.robot_exist?(robot_name(buf))
-                  puts "#{robot_name(buf)} does not exist"
-                  next
-                end
-                board.set_current_robot(robot_name(buf))
-                puts "current active robot is #{robot_name(buf)}"
-              else
-                puts 'Please start a new game'
-              end
-            when 'list robots'
+            when /LIST\sROBOTS/i
               board.display_robots
-            when /place\s/
-              if board.is_game_on? && board.current_robot
-                unless board.valid_place_attrs?(buf)
-                  puts 'PLACE robot failed - invalid attributes'
-                  next
-                end
-                attrs = buf.split(' ').last.split(',')
-                res = board.place_robot(attrs[0],attrs[1],attrs[2])
-                puts res ? "PLACE robot succeeded" : "PLACE robot failed - collided with existing robot"
+            when /([a-z])+:\sPLACE\s/i
+              if board.is_game_on?
+                res = board.place_robot_on_board(buf)
+                puts res ? "PLACE robot succeeded" : "PLACE robot failed"
               else
-                puts 'Please use a robot to play'
+                puts 'Please start a new game'
               end
-            when 'left'
-              if board.is_game_on? && board.current_robot && board.current_robot.is_active?
-                board.current_robot.turn('left')
+            when /([a-z])+:\sLEFT/i
+              if board.is_game_on?
+                 res = board.turn_robot_on_board(buf, 'left')
+                  puts res ? "#{robot_name(buf)} turned LEFT" : "#{robot_name(buf)} failed to turn"
               else
-                puts 'Please use a robot to play or place the robot to board'
+                puts 'Please start a new game'
               end
-            when 'right'
-              if board.is_game_on? && board.current_robot && board.current_robot.is_active?
-                board.current_robot.turn('right')
+            when /([a-z])+:\sRIGHT/i
+              if board.is_game_on?
+                res = board.turn_robot_on_board(buf, 'right')
+                puts res ? "#{robot_name(buf)} turned RIGHT" : "#{robot_name(buf)} failed to turn"
               else
-                puts 'Please use a robot to play or place the robot to board'
+                puts 'Please start a new game'
               end
-            when 'report'
-              if board.is_game_on? && board.current_robot
-                board.current_robot.report
-              else
-                puts 'Please use a robot to play'
-              end
-            when 'move'
-              if board.is_game_on? && board.current_robot && board.current_robot.is_active?
-                if board.new_position_collided?('move', {move: 1})
-                  puts 'Can not move the robot'
+            when /([a-z])+:\sREPORT/i
+              if board.is_game_on?
+                if board.robot_exist?(robot_name(buf))
+                  board.set_current_robot(robot_name(buf))
+                  board.current_robot.report
                 else
-                  board.current_robot.move
+                  puts 'Please use an existing robot'
                 end
               else
-                puts 'Please use a robot to play or place the robot to board'
+                puts 'Please start a new game'
               end
-            when 'help'
-              puts 'present_helper'
-            when 'exit'
+            when /([a-z])+:\sMOVE/i
+              if board.is_game_on?
+                res = board.move_robot_on_board(buf)
+                puts res ? "#{robot_name(buf)} MOVE 1 unit" : "#{robot_name(buf)} failed to MOVE"
+              else
+                puts 'Please start a new game'
+              end
+            when /HELP/i
+              present_helper
+            when /EXIT/i
               puts 'Bye for now.'
               exit
             else
@@ -94,7 +72,7 @@ module ToyRobotGame
     end
 
     def self.robot_name(str)
-      str.split(' ').last
+      str.split(' ').first.delete_suffix(':')
     end
   end
 end

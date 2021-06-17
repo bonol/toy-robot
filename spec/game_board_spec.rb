@@ -42,4 +42,51 @@ describe ToyRobotGame::GameBoard do
     end
   end
 
+  describe 'place_robot_on_board' do
+    it 'return true on place robot succeeded - new robot' do
+      expect(game_board.existing_robots.count).to eq(0)
+      expect(game_board.place_robot_on_board('vision: PLACE 1,1,NORTH')).to be_truthy
+      expect(game_board.existing_robots.count).to eq(1)
+    end
+    it 'return true on place robot succeeded - existing robot' do
+      vision = Robot.new('vision')
+      game_board.existing_robots = [vision]
+      expect(game_board.existing_robots.count).to eq(1)
+      expect(game_board.place_robot_on_board('vision: PLACE 1,1,NORTH')).to be_truthy
+      expect(game_board.existing_robots.count).to eq(1)
+    end
+    it 'return false if place attrs are invalid' do
+      expect(game_board.place_robot_on_board('vision: PLACE 7,1,NORTH')).to be_falsey
+    end
+    it 'return false if reach robot limit' do
+      ole = Robot.new('ole')
+      36.times{game_board.existing_robots << ole.dup}
+      expect(game_board.place_robot_on_board('vision: PLACE 1,1,NORTH')).to be_falsey
+    end
+  end
+
+  describe 'move_robot_on_board' do
+    it 'return true when move robot succeeded' do
+      game_board.place_robot_on_board('vision: PLACE 1,1,NORTH')
+      expect(game_board.move_robot_on_board('vision: MOVE')).to be_truthy
+    end
+    it 'return false when robot not exist' do
+      expect(game_board.move_robot_on_board('vision: MOVE')).to be_falsey
+    end
+    it 'return false when robot is not placed/active' do
+      vision = Robot.new('vision')
+      game_board.existing_robots = [vision]
+      expect(game_board.move_robot_on_board('vision: MOVE')).to be_falsey
+    end
+    it 'return false when new position invalid - fall off board' do
+      game_board.place_robot_on_board('vision: PLACE 5,5,NORTH')
+      expect(game_board.move_robot_on_board('vision: MOVE')).to be_falsey
+    end
+    it 'return false when new position invalid - collide with other robot' do
+      game_board.place_robot_on_board('vision: PLACE 2,2,NORTH')
+      game_board.place_robot_on_board('ole: PLACE 2,1,NORTH')
+      expect(game_board.move_robot_on_board('ole: MOVE')).to be_falsey
+    end
+  end
+
 end

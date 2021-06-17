@@ -3,15 +3,14 @@
 module InfoPresenter
   def present_helper
     puts '---------------------------------------------------------------------------'
-    puts 'start             -- clear all robots and create a clean board for game'
-    puts 'add               -- add robot to the board'
-    puts 'use               -- use an existing robot by robot name'
-    puts 'list robots       -- list robots on the board with their current positions'
-    puts 'place             -- put a toy robot on the board'
-    puts 'left              -- rotate a robot 90 degrees to the left'
-    puts 'right             -- rotate a robot 90 degrees to the right'
-    puts 'move              -- move a robot one step/unit forward'
-    puts 'exit              -- exit CLI'
+    puts 'START             -- clear all robots and create a clean board for game'
+    puts 'LIST ROBOTS       -- list robots on the board with their current positions'
+    puts 'PLACE             -- put a toy robot on the board, robotname: PLACE 1,2,NORTH'
+    puts 'LEFT              -- rotate a robot 90 degrees to the left, robotname: LEFT'
+    puts 'RIGHT             -- rotate a robot 90 degrees to the right, robotname: RIGHT'
+    puts 'MOVE              -- move a robot one step/unit forward, robotname: MOVE'
+    puts 'REPORT            -- report robot current position, robotname: REPORT'
+    puts 'EXIT              -- exit CLI'
     puts '---------------------------------------------------------------------------'
   end
 

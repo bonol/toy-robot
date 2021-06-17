@@ -5,22 +5,22 @@ describe ToyRobotGame::GameBoardHelper do
   describe 'valid_place_attrs?' do
     context 'without robot added to board' do
       it 'return true if place_attr are valid' do
-        expect(game_board.valid_place_attrs?('place 2,3,north')).to be_truthy
+        expect(game_board.valid_place_attrs?('vision: PLACE 2,3,NORTH')).to be_truthy
       end
-      it 'return false if attrs seperator format invalid' do
-        expect(game_board.valid_place_attrs?('place 2 3 north')).to be_falsey
+      it 'return false if attrs separator invalid' do
+        expect(game_board.valid_place_attrs?('vision: PLACE 2 3 north')).to be_falsey
       end
       it 'return false if attrs number invalid' do
-        expect(game_board.valid_place_attrs?('place 2,3')).to be_falsey
+        expect(game_board.valid_place_attrs?('vision: place 2,3')).to be_falsey
       end
       it 'return false if attrs direction invalid' do
-        expect(game_board.valid_place_attrs?('place 2,3,somewhere')).to be_falsey
+        expect(game_board.valid_place_attrs?('vision: place 2,3,somewhere')).to be_falsey
       end
       it 'return false if attrs coordination invalid' do
-        expect(game_board.valid_place_attrs?('place 8,3,east')).to be_falsey
+        expect(game_board.valid_place_attrs?('vision: place 8,3,east')).to be_falsey
       end
       it 'return false if attrs coordination invalid' do
-        expect(game_board.valid_place_attrs?('place 3,8,east')).to be_falsey
+        expect(game_board.valid_place_attrs?('vision: place 3,8,east')).to be_falsey
       end
     end
   end
@@ -148,6 +148,34 @@ describe ToyRobotGame::GameBoardHelper do
       ole = Robot.new('ole')
       game_board.existing_robots = [robbie, ole]
       expect(game_board.robot_exist?('hulk')).to be_falsey
+    end
+  end
+
+  describe 'collide_with_robot?' do
+    it 'return true if vision collide with ole when facing north' do
+      game_board.place_robot_on_board('ole: PLACE 1,1,NORTH')
+      game_board.place_robot_on_board('vision: PLACE 1,0,NORTH')
+      expect(game_board.collide_with_robot?(1)).to be_truthy
+    end
+    it 'return true if vision collide with ole when facing east' do
+      game_board.place_robot_on_board('ole: PLACE 1,1,NORTH')
+      game_board.place_robot_on_board('vision: PLACE 0,1,east')
+      expect(game_board.collide_with_robot?(1)).to be_truthy
+    end
+    it 'return true if vision collide with ole when facing south' do
+      game_board.place_robot_on_board('ole: PLACE 1,1,NORTH')
+      game_board.place_robot_on_board('vision: PLACE 1,2,SOUTH')
+      expect(game_board.collide_with_robot?(1)).to be_truthy
+    end
+    it 'return true if vision collide with ole when facing west' do
+      game_board.place_robot_on_board('ole: PLACE 1,1,WEST')
+      game_board.place_robot_on_board('vision: PLACE 2,1,WEST')
+      expect(game_board.collide_with_robot?(1)).to be_truthy
+    end
+    it 'return false if vision not collide with ole when facing west' do
+      game_board.place_robot_on_board('ole: PLACE 2,2,WEST')
+      game_board.place_robot_on_board('vision: PLACE 2,1,WEST')
+      expect(game_board.collide_with_robot?(1)).to be_falsey
     end
   end
 end

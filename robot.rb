@@ -10,7 +10,7 @@ class Robot
   end
 
   def turn(towards)
-    idx = DIRECTIONS.index{|d| @direction == d }
+    idx = DIRECTIONS.index{|d| @direction.downcase == d }
     if towards == 'left'
       @direction =  DIRECTIONS[idx - 1]
     else
@@ -19,11 +19,11 @@ class Robot
   end
 
   def report
-    puts "Robot #{@name} | Position x #{@x} | Position y #{@y} | Towards #{@direction}"
+    puts "#{@name}: #{@x}, #{@y}, #{@direction.upcase}"
   end
 
   def move(steps=1)
-    case @direction
+    case @direction.downcase
     when 'north'
       @y = @y + steps
     when 'south'

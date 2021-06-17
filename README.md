@@ -15,24 +15,25 @@ run rspec for test
 
 ### Commands available
 
-help              -- list all commands available
+HELP              -- list all commands available
 
-exit              -- exit game CLI
+EXIT              -- exit game CLI
 
-start             -- clear all robots and create a clean board for game
+START             -- clear all robots and create a clean board for game
 
-add               -- add robot to the board, example: add ROBOT_NAME
+LIST ROBOT        -- list robots on the board with their current positions
 
-use               -- use an existing robot by robot name, example: use ROBOT_NAME
+PLACE             -- put a toy robot on the board, robot position X,Y and facing
+                  -- example: robotname: PLACE 2,2,NORTH
 
-list robots       -- list robots on the board with their current positions
+LEFT              -- rotate a robot 90 degrees to the left
+                  -- example: robotname: LEFT
 
-place             -- put a toy robot on the board, robot position X,Y and facing, example place 2 2 north
+RIGHT             -- rotate a robot 90 degrees to the right
+                  -- example: robotname: RIGHT
 
-left              -- rotate a robot 90 degrees to the left without changing the position of the robot
+REPORT            -- report a robot current position and facing direction
+                  -- example: robotname: REPORT
 
-right             -- rotate a robot 90 degrees to the right without changing the position of the robot
-
-report            -- report a robot current position and facing direction
-
-move              -- move a robot one step/unit forward, example: move
+MOVE              -- move a robot one step/unit forward
+                  -- example: robotname: MOVE
