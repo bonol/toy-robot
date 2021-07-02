@@ -7,7 +7,7 @@ be able to fall off the edge or collide with other robots.
 ## Getting Started
 
 run
-ruby cli.rb
+ruby exe/cli.rb
 
 ### Test
 
@@ -21,7 +21,7 @@ EXIT              -- exit game CLI
 
 START             -- clear all robots and create a clean board for game
 
-LIST ROBOT        -- list robots on the board with their current positions
+LIST ROBOTS        -- list robots on the board with their current positions
 
 PLACE             -- put a toy robot on the board, robot position X,Y and facing
                   -- example: robotname: PLACE 2,2,NORTH

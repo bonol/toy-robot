@@ -1,8 +1,8 @@
-require './toy_robot_game'
+require_relative '../../lib/toy_robot_game'
 
-describe Robot do
+describe ToyRobotGame::Robot do
   let(:game_board) {ToyRobotGame::GameBoard.new(6,6)}
-  let(:vision) {Robot.new('vision')}
+  let(:vision) {ToyRobotGame::Robot.new('vision')}
   describe 'turn' do
     it 'turn left' do
       vision.place('0', '0','south')

@@ -1,6 +1,6 @@
-#game board helper methods
+#game simulator helper methods
 module ToyRobotGame
-  module GameBoardHelper
+  module GameSimulatorHelper
     def valid_direction?(direction)
       Robot::DIRECTIONS.include?(direction.downcase)
     end
@@ -9,15 +9,24 @@ module ToyRobotGame
       @game_state == 'playing'
     end
 
-    def within_robot_limit?
-      @col_num * @row_num > @existing_robots.count
+    def add_robot(name)
+      new_robot = Robot.new(name)
+      @existing_robots << new_robot
     end
 
-    def invalid_board_position(x, y, direction)
-      return true if x.to_i < 0 || x.to_i >= @col_num
-      return true if y.to_i < 0 || y.to_i >= @row_num
-      return true unless Robot::DIRECTIONS.include?(direction.downcase)
-      false
+    def turn_robot_on_board(robot_name, direction)
+      if robot_exist?(robot_name)
+        set_current_robot(robot_name)
+        @current_robot.turn(direction)
+        true
+      else
+        puts 'Please use a existing robot and place it to board'
+        false
+      end
+    end
+
+    def within_robot_limit?
+      @board.col_num * @board.row_num > @existing_robots.count
     end
 
     def new_position_collided?(action, attrs)
@@ -26,11 +35,11 @@ module ToyRobotGame
       elsif action == 'move'
         case @current_robot.direction.downcase
         when 'north'
-          (@current_robot.y.to_i + attrs[:move] >= @row_num) || collide_with_robot?(attrs[:move])
+          (@current_robot.y.to_i + attrs[:move] >= @board.row_num) || collide_with_robot?(attrs[:move])
         when 'south'
           (@current_robot.y.to_i - attrs[:move] < 0) || collide_with_robot?(attrs[:move])
         when 'east'
-          (@current_robot.x + attrs[:move] >= @col_num) || collide_with_robot?(attrs[:move])
+          (@current_robot.x + attrs[:move] >= @board.col_num) || collide_with_robot?(attrs[:move])
         when 'west'
           (@current_robot.x - attrs[:move] < 0) || collide_with_robot?(attrs[:move])
         else
@@ -43,19 +52,23 @@ module ToyRobotGame
       case @current_robot.direction.downcase
       when 'north'
         @existing_robots.reject{|robot| robot.name == @current_robot.name}.
-            any?{|robot| (robot.y.to_i == @current_robot.y.to_i + move) && (robot.x.to_i == @current_robot.x.to_i) }
+          any?{|robot| (robot.y.to_i == @current_robot.y.to_i + move) && (robot.x.to_i == @current_robot.x.to_i) }
       when 'south'
         @existing_robots.reject{|robot| robot.name == @current_robot.name}.
-            any?{|robot| (robot.y.to_i == @current_robot.y.to_i - move) && (robot.x.to_i == @current_robot.x.to_i) }
+          any?{|robot| (robot.y.to_i == @current_robot.y.to_i - move) && (robot.x.to_i == @current_robot.x.to_i) }
       when 'east'
         @existing_robots.reject{|robot| robot.name == @current_robot.name}.
-            any?{|robot| (robot.x.to_i == @current_robot.x.to_i + move) && (robot.y.to_i == @current_robot.y.to_i) }
+          any?{|robot| (robot.x.to_i == @current_robot.x.to_i + move) && (robot.y.to_i == @current_robot.y.to_i) }
       when 'west'
         @existing_robots.reject{|robot| robot.name == @current_robot.name}.
-            any?{|robot| (robot.x.to_i == @current_robot.x.to_i - move ) && (robot.y.to_i == @current_robot.y.to_i) }
+          any?{|robot| (robot.x.to_i == @current_robot.x.to_i - move ) && (robot.y.to_i == @current_robot.y.to_i) }
       else
         true
       end
+    end
+
+    def set_current_robot(robot_name)
+      @current_robot = get_robot_by_name robot_name
     end
 
     def get_robot_by_name(robot_name)
@@ -73,17 +86,10 @@ module ToyRobotGame
       robot.direction = direction
     end
 
-    def valid_place_attrs?(place_attr)
-      return false unless place_attr.split(' ').count == 3
-      attrs = place_attr.split(' ').last.split(',')
-      return false unless attrs.count == 3
-      return false unless valid_direction?(attrs[2])
-      return false if invalid_board_position(attrs[0], attrs[1], attrs[2])
+    def valid_place_attrs?(x, y, direction)
+      return false unless valid_direction?(direction)
+      return false unless @board.valid_board_position?(x, y)
       true
-    end
-
-    def robot_name(str)
-      str.split(' ').first.delete_suffix(':')
     end
   end
 end
