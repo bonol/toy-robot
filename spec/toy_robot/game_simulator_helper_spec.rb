@@ -1,8 +1,8 @@
 require_relative '../../lib/toy_robot_game'
 
 describe ToyRobotGame::GameSimulatorHelper do
-  let(:game_board) {ToyRobotGame::GameBoard.new(6,6)}
-  let(:simulator) {ToyRobotGame::GameSimulator.new(game_board)}
+  let(:game_board) { ToyRobotGame::GameBoard.new(6,6) }
+  let(:simulator) { ToyRobotGame::GameSimulator.new(game_board) }
   describe 'valid_place_attrs?' do
     context 'without robot added to board' do
       it 'return true if place_attr are valid' do
@@ -129,7 +129,7 @@ describe ToyRobotGame::GameSimulatorHelper do
   end
 
   describe 'collide_with_robot?' do
-    before {simulator.start_game}
+    before { simulator.start_game }
     it 'return true if vision collide with ole when facing north' do
       simulator.place('ole', 1,1, 'NORTH')
       simulator.place('vision',1, 0, 'NORTH')

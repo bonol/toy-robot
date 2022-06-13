@@ -5,8 +5,10 @@ module ToyRobotGame
   class CLI
     include InfoPresenter
 
-    def initialize
-      board = GameBoard.new(6,6)
+    def initialize(col, row)
+      @col ||= 6
+      @row ||= 6
+      board = GameBoard.new(@col, @row)
       @simulator = GameSimulator.new(board)
     end
 
@@ -17,6 +19,9 @@ module ToyRobotGame
         begin
           command = ToyRobotGame::Command.process(buf)
           run [command]
+        rescue ToyRobotGame::RobotError => e
+          puts "command error: #{e.message}"
+          next
         rescue => e
           puts 'rescue from error, please try again.'
           puts "error message: #{e.message}"

@@ -6,6 +6,7 @@ module ToyRobotGame
     include GameSimulatorHelper
 
     attr_accessor :board, :existing_robots, :game_state, :current_robot
+
     def initialize(board)
       @board = board
       @existing_robots = []
@@ -23,85 +24,69 @@ module ToyRobotGame
       @current_robot = nil
     end
 
-    def display_robots
-      if @existing_robots.count > 0
-        @existing_robots.each do |robot|
-          puts "#{robot.name}: #{robot.x},#{robot.y},#{robot.direction.upcase}"
-        end
-      else
-        puts "No robot on the board"
+    alias_method :start, :start_game
+
+    def list_robots
+      raise ToyRobotGame::RobotError, 'No robot on the board' unless @existing_robots.count.positive?
+
+      @existing_robots.each do |robot|
+        puts "#{robot.name}: #{robot.x},#{robot.y},#{robot.direction.upcase}"
       end
+    end
+
+    def current
+      raise ToyRobotGame::RobotError, 'Game not started. No robot places on board.' unless is_game_on?
+      puts "current robot is #{@current_robot&.name}"
     end
 
     def place(robot_name, x, y, direction)
-      if is_game_on?
-        unless valid_place_attrs?(x, y, direction)
-          puts 'PLACE robot failed - invalid attributes'
-          return
-        end
+      raise ToyRobotGame::RobotError, 'Please start a new game' unless is_game_on?
+      raise ToyRobotGame::RobotError, 'PLACE robot failed - invalid attributes' unless valid_place_attrs?(x, y, direction)
+      raise ToyRobotGame::RobotError, 'Reach Robot limit!' unless within_robot_limit?
+      raise ToyRobotGame::RobotError, 'Robot already on board' if robot_exist?(robot_name)
+      raise ToyRobotGame::RobotError, 'PLACE robot failed - position already taken' if new_position_collided?('place', { x: x,y: y })
 
-        if new_position_collided?('place', {x: x,y: y})
-          puts 'PLACE robot failed - position already taken'
-          return
-        end
-
-        if robot_exist?(robot_name)
-          puts 'Robot already on board'
-          return
-        else
-          if within_robot_limit?
-            add_robot(robot_name)
-            set_current_robot(robot_name)
-          else
-            puts 'Reach Robot limit!'
-            return
-          end
-        end
-        @current_robot.place(x, y ,direction)
-        puts "PLACE robot succeeded"
-      else
-        puts 'Please start a new game'
-      end
+      add_robot(robot_name)
+      set_current_robot(robot_name)
+      @current_robot.place(x, y ,direction)
+      puts 'PLACE robot succeeded'
     end
 
-    def turn_left(robot_name)
-      if is_game_on?
-        turn_robot_on_board(robot_name, 'left')
-      else
-        puts 'Please start a new game'
-      end
+    def left(robot_name=nil)
+      raise ToyRobotGame::RobotError, 'Please start a new game' unless is_game_on?
+      robot_name ||= @current_robot&.name
+      raise ToyRobotGame::RobotError, 'Please use an existing robot' unless robot_exist?(robot_name)
+
+      set_current_robot(robot_name)
+      @current_robot.turn('left')
     end
 
-    def turn_right(robot_name)
-      if is_game_on?
-        turn_robot_on_board(robot_name, 'right')
-      else
-        puts 'Please start a new game'
-      end
+    def right(robot_name=nil)
+      raise ToyRobotGame::RobotError, 'Please start a new game' unless is_game_on?
+      robot_name ||= @current_robot&.name
+      raise ToyRobotGame::RobotError, 'Please use an existing robot' unless robot_exist?(robot_name)
+
+      set_current_robot(robot_name)
+      @current_robot.turn('right')
     end
 
-    def report(robot_name)
-      if is_game_on?
-        if robot_exist?(robot_name)
-          set_current_robot(robot_name)
-          @current_robot.report
-        else
-          puts 'Please use an existing robot'
-        end
-      else
-        puts 'Please start a new game'
-      end
+    def report(robot_name=nil)
+      raise ToyRobotGame::RobotError, 'Please start a new game' unless is_game_on?
+      robot_name ||= @current_robot&.name
+      raise ToyRobotGame::RobotError, 'Please use an existing robot' unless robot_exist?(robot_name)
+
+      set_current_robot(robot_name)
+      @current_robot.report
     end
 
-    def move(robot_name)
-      if robot_exist?(robot_name)
-        set_current_robot(robot_name)
-        @current_robot.move unless new_position_collided?('move', {move: 1})
-        true
-        new_position_collided?('move', {move: 1}) ? false : @current_robot.move
-      else
-        puts 'Please use an existing robot and place it to board'
-      end
+    def move(robot_name=nil)
+      raise ToyRobotGame::RobotError, 'Please start a new game' unless is_game_on?
+      robot_name ||= @current_robot&.name
+      raise ToyRobotGame::RobotError, 'Please use an existing robot' unless robot_exist?(robot_name)
+
+      set_current_robot(robot_name)
+      raise ToyRobotGame::RobotError, 'Invalid move' if new_position_collided?('move', { move: 1 })
+      @current_robot.move
     end
   end
 end

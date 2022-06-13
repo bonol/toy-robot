@@ -1,39 +1,95 @@
 Toy Robot Game
 ==============
 
-Simulate a toy robot moving on a square board of 6 x 6 units. The robot can roam around the surface of the board but shouldn't
+Simulate a toy robot moving on a square board of N x M units. Player can place multiple robots to the board.
+
+The robot can roam around the surface of the board but shouldn't
 be able to fall off the edge or collide with other robots.
 
 ## Getting Started
 
-run
-ruby exe/cli.rb
+### Play game with default 6 * 6 board
+#### Run:
+ruby exe/toy_robot.rb
 
-### Test
+### Play game with N x M size board
+#### Run:
+ruby exe/toy_robot.rb 5 5
 
-run rspec for test
+### Start the game:
+START  
+PLACE robot_name X,Y,Direction
 
-### Commands available
+## Test
 
-HELP              -- list all commands available
+#### Run: rspec
 
-EXIT              -- exit game CLI
+## Commands available (all commands are not case sensitive)
+> HELP
+>- list all commands available
 
-START             -- clear all robots and create a clean board for game
+> EXIT
+>- exit game CLI
 
-LIST ROBOTS        -- list robots on the board with their current positions
+> START
+>- clear all robots and create a clean board for game
 
-PLACE             -- put a toy robot on the board, robot position X,Y and facing
-                  -- example: robotname: PLACE 2,2,NORTH
+> LIST ROBOTS
+>- list robots on the board with their current positions
 
-LEFT              -- rotate a robot 90 degrees to the left
-                  -- example: robotname: LEFT
+> PLACE
+>- put a toy robot on the board, robot position X,Y and facing
+>- example: PLACE robotname 2,2,NORTH
 
-RIGHT             -- rotate a robot 90 degrees to the right
-                  -- example: robotname: RIGHT
+> LEFT
+>- rotate a robot 90 degrees to the left
+>- example: LEFT robotname or LEFT
 
-REPORT            -- report a robot current position and facing direction
-                  -- example: robotname: REPORT
+> RIGHT
+>- rotate a robot 90 degrees to the right
+>- example: RIGHT robotname or RIGHT
 
-MOVE              -- move a robot one step/unit forward
-                  -- example: robotname: MOVE
+> REPORT
+>- report a robot current position and facing direction
+>- example: REPORT robotname or REPORT
+
+> MOVE
+>- move a robot one step/unit forward
+>- example: MOVE robotname or MOVE
+
+## Example Input and Output
+### (a) 
+    START
+    PLACE tony 0,0,NORTH  
+    MOVE  
+    REPORT  
+    Output: tony: 0,1,NORTH
+### (b)
+    START
+    PLACE tony 0,0,NORTH  
+    LEFT  
+    REPORT  
+    Output: tony: 0,0,WEST
+### (c)
+    START
+    PLACE tony 1,2,EAST  
+    MOVE  
+    MOVE  
+    LEFT  
+    MOVE  
+    REPORT  
+    Output: tony: 3,3,NORTH
+### (d)
+    START
+    PLACE tony 0,0,NORTH  
+    MOVE  
+    REPORT  
+    Output: tony: 0,1,NORTH
+    PLACE thor 0,1,EAST
+    Output: PLACE robot failed - position already taken
+    PLACE thor 3,3,NORTH
+    RIGHT tony
+    LEFT thor
+    LIST ROBOTS
+    Output: tony: 0,1,EAST
+            thor: 3,3,WEST

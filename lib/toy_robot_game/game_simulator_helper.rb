@@ -14,34 +14,24 @@ module ToyRobotGame
       @existing_robots << new_robot
     end
 
-    def turn_robot_on_board(robot_name, direction)
-      if robot_exist?(robot_name)
-        set_current_robot(robot_name)
-        @current_robot.turn(direction)
-        true
-      else
-        puts 'Please use a existing robot and place it to board'
-        false
-      end
-    end
-
     def within_robot_limit?
       @board.col_num * @board.row_num > @existing_robots.count
     end
 
     def new_position_collided?(action, attrs)
-      if action == 'place'
-        @existing_robots.any? {|robot| robot.x == attrs[:x].to_i && robot.y == attrs[:y].to_i}
-      elsif action == 'move'
+      case action
+      when 'place'
+        @existing_robots.any? { |robot| robot.x == attrs[:x].to_i && robot.y == attrs[:y].to_i }
+      when 'move'
         case @current_robot.direction.downcase
         when 'north'
           (@current_robot.y.to_i + attrs[:move] >= @board.row_num) || collide_with_robot?(attrs[:move])
         when 'south'
-          (@current_robot.y.to_i - attrs[:move] < 0) || collide_with_robot?(attrs[:move])
+          (@current_robot.y.to_i - attrs[:move]).negative? || collide_with_robot?(attrs[:move])
         when 'east'
           (@current_robot.x + attrs[:move] >= @board.col_num) || collide_with_robot?(attrs[:move])
         when 'west'
-          (@current_robot.x - attrs[:move] < 0) || collide_with_robot?(attrs[:move])
+          (@current_robot.x - attrs[:move]).negative? || collide_with_robot?(attrs[:move])
         else
           true
         end
@@ -51,20 +41,20 @@ module ToyRobotGame
     def collide_with_robot?(move)
       case @current_robot.direction.downcase
       when 'north'
-        @existing_robots.reject{|robot| robot.name == @current_robot.name}.
-          any?{|robot| (robot.y.to_i == @current_robot.y.to_i + move) && (robot.x.to_i == @current_robot.x.to_i) }
+        @existing_robots.any? { |robot| (robot.name != @current_robot.name) && is_dimension_collided?(robot, :y, :+, move) && (robot.x.to_i == @current_robot.x.to_i) }
       when 'south'
-        @existing_robots.reject{|robot| robot.name == @current_robot.name}.
-          any?{|robot| (robot.y.to_i == @current_robot.y.to_i - move) && (robot.x.to_i == @current_robot.x.to_i) }
+        @existing_robots.any? { |robot| (robot.name != @current_robot.name) && is_dimension_collided?(robot, :y, :-, move) && (robot.x.to_i == @current_robot.x.to_i) }
       when 'east'
-        @existing_robots.reject{|robot| robot.name == @current_robot.name}.
-          any?{|robot| (robot.x.to_i == @current_robot.x.to_i + move) && (robot.y.to_i == @current_robot.y.to_i) }
+        @existing_robots.any? { |robot| (robot.name != @current_robot.name) && is_dimension_collided?(robot, :x, :+, move) && (robot.y.to_i == @current_robot.y.to_i) }
       when 'west'
-        @existing_robots.reject{|robot| robot.name == @current_robot.name}.
-          any?{|robot| (robot.x.to_i == @current_robot.x.to_i - move ) && (robot.y.to_i == @current_robot.y.to_i) }
+        @existing_robots.any? { |robot| (robot.name != @current_robot.name) && is_dimension_collided?(robot, :x, :-, move) && (robot.y.to_i == @current_robot.y.to_i) }
       else
         true
       end
+    end
+
+    def is_dimension_collided?(robot, dimension, operator, move)
+      robot.send(dimension).to_i == @current_robot.send(dimension).to_i.send(operator, move)
     end
 
     def set_current_robot(robot_name)
@@ -72,15 +62,15 @@ module ToyRobotGame
     end
 
     def get_robot_by_name(robot_name)
-      @existing_robots.find{|robot| robot.name == robot_name}
+      @existing_robots.find { |robot| robot.name == robot_name }
     end
 
     def robot_exist?(robot_name)
-      @existing_robots.any?{|robot| robot.name == robot_name}
+      @existing_robots.any? { |robot| robot.name == robot_name }
     end
 
     def update_existing(x, y ,direction)
-      robot = @existing_robots.find{|robot| robot.name == @current_robot.name}
+      robot = @existing_robots.find { |robot| robot.name == @current_robot.name }
       robot.x = x
       robot.y = y
       robot.direction = direction

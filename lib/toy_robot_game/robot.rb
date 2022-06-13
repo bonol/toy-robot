@@ -17,6 +17,7 @@ module ToyRobotGame
       else
         @direction = idx == 3 ? DIRECTIONS[0] : DIRECTIONS[idx + 1]
       end
+      true
     end
 
     def report
